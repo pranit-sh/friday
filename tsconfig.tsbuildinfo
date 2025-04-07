@@ -1,0 +1,1 @@
+{"root":["./src/constants.ts","./src/extension.ts","./src/types.ts","./src/util.ts","./src/core/interfaces/base-embeddings.ts","./src/core/interfaces/base-loader.ts","./src/core/loaders/text-loader.ts","./src/core/models/openaiembeddings.ts","./src/core/util/strings.ts","./src/test/extension.test.ts"],"version":"5.8.2"}

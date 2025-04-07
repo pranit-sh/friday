@@ -1,0 +1,78 @@
+{
+  "name": "friday",
+  "displayName": "friday",
+  "description": "AI Project Assistant",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.4"
+  },
+  "categories": [
+    "AI",
+    "Chat"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "chat-participant.friday",
+        "name": "friday",
+        "fullName": "Friday",
+        "description": "Ask Friday",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "ping",
+            "description": "Check connection"
+          },
+          {
+            "name": "ingest",
+            "description": "Ingest project documents"
+          },
+          {
+            "name": "howto",
+            "description": "How to use Friday"
+          }
+        ]
+      }
+    ],
+    "commands": []
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "publish": "vsce publish",
+    "package": "vsce package",
+    "vscode:prepublish": "npm run build",
+    "local-test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --no-coverage",
+    "generate": "antlr4ng -Dlanguage=TypeScript -visitor -Xexact-output-dir grammars/LexBasic.g4 grammars/ANTLRv4Lexer.g4 grammars/ANTLRv4Parser.g4 -o src/parser",
+    "lint": "eslint \"./src/**/*.ts\"",
+    "build": "tsc -b && esbuild ./src/extension.ts --bundle --outfile=out/main.cjs --external:vscode --format=cjs --platform=node --loader:.svg=file",
+    "build-watch": "npm run build -- --watch"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.98.0",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.21.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.36",
+    "@langchain/core": "^0.3.42",
+    "@langchain/textsplitters": "^0.1.0",
+    "@sap-ai-sdk/foundation-models": "^1.10.0",
+    "@sap/hana-client": "^2.24.21",
+    "any-text": "^1.2.0",
+    "dotenv": "^16.4.7",
+    "esbuild": "^0.25.1"
+  }
+}
