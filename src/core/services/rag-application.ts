@@ -4,10 +4,10 @@ import { BaseModel } from '../interfaces/base-model';
 import { RAGApplicationBuilder } from './rag-application-builder';
 import { DEFAULT_INSERT_BATCH_SIZE } from '../../constants';
 import { cleanString } from '../util/strings';
-import { BaseVectorDatabase } from '../interfaces/base-vector-database';
 import { MemoryStore } from '../store/memory-store';
 import { ChatRequestTurn, ChatResponseTurn, Uri } from 'vscode';
 import { AnytextLoader } from '../loaders/anytext-loader';
+import { HanaDB } from '../databases/hana-db';
 
 export class RAGApplication {
   private readonly systemMessage: string;
@@ -15,7 +15,7 @@ export class RAGApplication {
   private readonly searchResultCount: number;
   private readonly model: BaseModel;
   private readonly embeddingModel: BaseEmbeddings;
-  private readonly vectorDatabase: BaseVectorDatabase;
+  private readonly vectorDatabase: HanaDB;
   private readonly store: MemoryStore;
 
   constructor(builder: RAGApplicationBuilder) {

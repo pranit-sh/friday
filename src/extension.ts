@@ -4,11 +4,11 @@ import { fileExists, directoryExists } from './core/util/files';
 import { createMetadata, createRagApplication } from './core/util/helper';
 import { MemoryStore } from './core/store/memory-store';
 import { RAGApplication } from './core/services/rag-application';
-import { BaseVectorDatabase } from './core/interfaces/base-vector-database';
 import { HOWTO_RESPONSE } from './constants';
 
 import * as dotenv from 'dotenv';
 import path from 'path';
+import { HanaDB } from './core/databases/hana-db';
 
 const FRIDAY_PARTICIPANT_ID = 'chat-participant.friday';
 
@@ -42,7 +42,7 @@ async function handleHowtoCommand(stream: vscode.ChatResponseStream) {
 	return createMetadata('', '');
 }
 
-async function handlePingCommand(stream: vscode.ChatResponseStream, db: BaseVectorDatabase, store: MemoryStore) {
+async function handlePingCommand(stream: vscode.ChatResponseStream, db: HanaDB, store: MemoryStore) {
 	const config = await verifyConfigFile(stream);
 	if (!config) return createMetadata('how to use friday', 'howto');
 
@@ -58,7 +58,7 @@ async function handlePingCommand(stream: vscode.ChatResponseStream, db: BaseVect
 	}
 }
 
-async function handleIngestCommand(request: vscode.ChatRequest, stream: vscode.ChatResponseStream, ragApp: RAGApplication, db: BaseVectorDatabase, store: MemoryStore): Promise<vscode.ChatResult> {
+async function handleIngestCommand(request: vscode.ChatRequest, stream: vscode.ChatResponseStream, ragApp: RAGApplication, db: HanaDB, store: MemoryStore): Promise<vscode.ChatResult> {
 	const config = await verifyConfigFile(stream);
 	if (!config) return createMetadata('how to use friday', 'howto');
 

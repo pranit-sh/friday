@@ -1,7 +1,6 @@
 import { ExtractChunkData, FridayConfig, InsertChunkData } from "../../types";
 
 export interface BaseVectorDatabase {
-    init(hanaConfig: FridayConfig | null): Promise<void>;
     isActive(): boolean;
     getIngestedFiles(project_id: string): Promise<string[]>;
     insertChunks(chunks: InsertChunkData[], project_id: string): Promise<number>;

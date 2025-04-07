@@ -1,6 +1,6 @@
+import { HanaDB } from '../databases/hana-db.js';
 import { BaseEmbeddings } from '../interfaces/base-embeddings.js';
 import { BaseModel } from '../interfaces/base-model.js';
-import { BaseVectorDatabase } from '../interfaces/base-vector-database.js';
 import { MemoryStore } from '../store/memory-store.js';
 import { RAGApplication } from './rag-application.js';
 
@@ -11,18 +11,18 @@ export class RAGApplicationBuilder {
   private embeddingModel: BaseEmbeddings | null;
   private searchResultCount: number;
   private embeddingRelevanceCutOff: number;
-  private vectorDatabase: BaseVectorDatabase | null;
+  private vectorDatabase: HanaDB | null;
   private store: MemoryStore | null;
 
   constructor() {
     this.model = null;
     this.temperature = 0.1;
-    this.systemMessage = `You are Friday, a helpful and intelligent assistant designed to assist with user queries. Use the provided context and, when available, the summary of the previous conversation to answer the user's queries accurately and comprehensively.
+    this.systemMessage = `You are Friday, a helpful and intelligent assistant designed to assist with user queries. Use the provided context to answer the user's queries accurately and comprehensively.
       If you don't know the answer, simply state that you don't know, without attempting to fabricate a response. Avoid using terms like "context" or "training data" in your replies. Instead, focus on providing clear and reliable information.
       Respond in a friendly, confident, and professional tone.`;
     this.embeddingModel = null;
     this.searchResultCount = 3;
-    this.embeddingRelevanceCutOff = 0.5;
+    this.embeddingRelevanceCutOff = 0.4;
     this.vectorDatabase = null;
     this.store = null;
   }
@@ -85,7 +85,7 @@ export class RAGApplicationBuilder {
     return this.embeddingRelevanceCutOff;
   }
 
-  setVectorDatabase(vectorDatabase: BaseVectorDatabase) {
+  setVectorDatabase(vectorDatabase: HanaDB) {
     this.vectorDatabase = vectorDatabase;
     return this;
   }

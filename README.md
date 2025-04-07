@@ -33,9 +33,7 @@
 - Initial release of @friday.
 - Core features: document ingestion, query answering, and context-aware responses.
 
----
-
-## Run locally
+## Run Locally
 
 1. **Clone the Repository**:
     ```bash
@@ -60,7 +58,5 @@
 
 5. **Access the Application**:
   Open GitHub Copilot and use @friday as a chat participant to interact and get assistance. 
-
----
 
 **Enjoy using @friday!**
