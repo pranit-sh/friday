@@ -1,10 +1,16 @@
-
-import { ChatClientMessage, Chunk, Conversation, Message, ModelResponse, QueryResponse, SourceDetail } from '../../types.js';
+import {
+  ChatClientMessage,
+  Chunk,
+  Conversation,
+  Message,
+  ModelResponse,
+  QueryResponse,
+  SourceDetail,
+} from '../../types.js';
 import { ChatRequestTurn, ChatResponseTurn } from 'vscode';
 import { MemoryStore } from '../store/memory-store.js';
 
 export abstract class BaseModel {
-
   abstract initClient(): Promise<void>;
 
   public extractUniqueSources(supportingContext: Chunk[]): SourceDetail[] {
@@ -36,8 +42,11 @@ export abstract class BaseModel {
       },
       {
         role: 'system',
-        content: `Supporting context: ${store?.getContext().map((s) => s.pageContent).join('; ')}`,
-      }
+        content: `Supporting context: ${store
+          ?.getContext()
+          .map((s) => s.pageContent)
+          .join('; ')}`,
+      },
     ] as ChatClientMessage[];
     history.forEach((message) => {
       if (message instanceof ChatRequestTurn) {
@@ -109,7 +118,7 @@ export abstract class BaseModel {
         "needRetrieval": true,  
         "intent": "How does quantum entanglement relate to teleportation?"  
       }
-    `
+    `;
     const userMessage = `
       User Query: "${userQuery}"
       Previous Intent: "${store.getIntent()}"

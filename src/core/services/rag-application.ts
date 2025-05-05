@@ -6,8 +6,10 @@ import { DEFAULT_INSERT_BATCH_SIZE } from '../../constants';
 import { cleanString } from '../util/strings';
 import { MemoryStore } from '../store/memory-store';
 import { ChatRequestTurn, ChatResponseTurn, Uri } from 'vscode';
-import { AnytextLoader } from '../loaders/anytext-loader';
+import { FileLoader } from '../loaders/file-loader';
 import { HanaDB } from '../databases/hana-db';
+import { FileUrlLoader } from '../loaders/fileurl-loader';
+import { ConfluencePageLoader } from '../loaders/confluence-loader';
 
 export class RAGApplication {
   private readonly systemMessage: string;
@@ -25,7 +27,8 @@ export class RAGApplication {
 
     this.model = builder.getModel() ?? this.throwError('LLM must be set!');
     this.embeddingModel = builder.getEmbeddingModel() ?? this.throwError('Embeddings must be set!');
-    this.vectorDatabase = builder.getVectorDatabase() ?? this.throwError('Vector database must be set!');
+    this.vectorDatabase =
+      builder.getVectorDatabase() ?? this.throwError('Vector database must be set!');
     this.store = builder.getStore() ?? this.throwError('Store must be set!');
   }
 
@@ -40,19 +43,40 @@ export class RAGApplication {
 
   public async ingestFile(uri: Uri): Promise<void> {
     const extension = uri.fsPath.split('.').pop();
-    if (!extension) return;
+    if (!extension) {
+      return;
+    }
 
-    const supportedExtensions = ['doc', 'docx', 'dot', 'pdf', 'csv', 'txt', 'xls', 'xlsx', 'json'];
-    if (!supportedExtensions.includes(extension)) return;
-
-    const loader = new AnytextLoader({ filePath: uri.fsPath });
+    const loader = new FileLoader({ filePath: uri.fsPath });
     const uniqueFileId = loader.getUniqueId();
     const chunks = await loader.getChunks();
     const entries = await this.batchLoadChunks(uniqueFileId, chunks);
     await this.saveFileMeta(uniqueFileId, entries);
   }
 
-  private async batchLoadChunks(uniqueFileId: string, generator: AsyncGenerator<LoaderChunk, void, void>): Promise<number> {
+  public async ingestFileUrl(fileUrl: string, basicAuth?: string): Promise<void> {
+    const loader = new FileUrlLoader({ fileUrl });
+    const uniqueFileId = loader.getUniqueId();
+    const chunks = await loader.getChunks();
+    const entries = await this.batchLoadChunks(uniqueFileId, chunks);
+    await this.saveFileMeta(uniqueFileId, entries);
+  }
+
+  public async ingestConfluencePage(
+    pageId: string,
+    p0: { baseUrl: string; user: string; apiKey: string },
+  ): Promise<void> {
+    const loader = new ConfluencePageLoader({ pageId, ...p0 });
+    const uniqueFileId = loader.getUniqueId();
+    const chunks = await loader.getChunks();
+    const entries = await this.batchLoadChunks(uniqueFileId, chunks);
+    await this.saveFileMeta(uniqueFileId, entries);
+  }
+
+  private async batchLoadChunks(
+    uniqueFileId: string,
+    generator: AsyncGenerator<LoaderChunk, void, void>,
+  ): Promise<number> {
     let batchSize = 0;
     let entries = 0;
     let formattedChunks: Chunk[] = [];
@@ -80,10 +104,12 @@ export class RAGApplication {
 
   private async saveEmbeddingsToDb(chunks: Chunk[]): Promise<number> {
     const projectId = this.getProjectId();
-    const embeddings = await this.embeddingModel.embedDocuments(chunks.map(chunk => chunk.pageContent));
+    const embeddings = await this.embeddingModel.embedDocuments(
+      chunks.map((chunk) => chunk.pageContent),
+    );
     await this.vectorDatabase.insertChunks(
       chunks.map((chunk, i) => ({ ...chunk, vector: embeddings[i] })),
-      projectId
+      projectId,
     );
     return chunks.length;
   }
@@ -98,18 +124,21 @@ export class RAGApplication {
     await this.vectorDatabase.deleteFile(fileName, projectId);
   }
 
-  public async query(userQuery: string, history: readonly (ChatRequestTurn | ChatResponseTurn)[]): Promise<any> {
+  public async query(
+    userQuery: string,
+    history: readonly (ChatRequestTurn | ChatResponseTurn)[],
+  ): Promise<any> {
     const needRetrieval = await this.model.updateIntent(userQuery, this.store);
     if (needRetrieval) {
       await this.updateContext();
     }
 
     const messages = await this.model.prepare(this.systemMessage, userQuery, history, this.store);
-    const response =  await this.model.runQueryStream(messages);
-    return  {
+    const response = await this.model.runQueryStream(messages);
+    return {
       response,
       sources: needRetrieval ? this.getSources() : [],
-    }
+    };
   }
 
   private async updateContext(): Promise<void> {
@@ -121,10 +150,10 @@ export class RAGApplication {
       projectId,
       embeddings,
       this.embeddingRelevanceCutOff,
-      this.searchResultCount
+      this.searchResultCount,
     );
 
-    const chunks = extractedChunks.map(chunk => ({
+    const chunks = extractedChunks.map((chunk) => ({
       pageContent: chunk.pageContent,
       metadata: chunk.metadata,
     }));

@@ -28,15 +28,15 @@ export class OpenAiModel extends BaseModel {
     const response = await this.chatClient.run({
       messages: messages,
       response_format: {
-        type: 'json_object'
-      }
+        type: 'json_object',
+      },
     });
     return response.getContent();
   }
 
   async runQueryStream(messages: ChatClientMessage[]) {
     const response = await this.chatClient.stream({
-      messages: messages
+      messages: messages,
     });
     return response;
   }

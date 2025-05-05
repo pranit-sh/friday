@@ -1,5 +1,5 @@
-import { SIMPLE_EMBEDDINGS } from "../../constants";
-import { BaseEmbeddings } from "../interfaces/base-embeddings";
+import { SIMPLE_EMBEDDINGS } from '../../constants';
+import { BaseEmbeddings } from '../interfaces/base-embeddings';
 
 export class OpenAiEmbeddings extends BaseEmbeddings {
   private embeddingClient: any;
@@ -24,7 +24,7 @@ export class OpenAiEmbeddings extends BaseEmbeddings {
   }
 
   public isReady(): boolean {
-    return !!this.embeddingClient
+    return !!this.embeddingClient;
   }
 
   override async getDimensions(): Promise<number> {
@@ -32,7 +32,7 @@ export class OpenAiEmbeddings extends BaseEmbeddings {
   }
 
   override async embedDocuments(texts: string[]): Promise<number[][]> {
-    if (!this.embeddingClient) {  
+    if (!this.embeddingClient) {
       throw new Error('Embedding client is not initialized');
     }
     const response = await this.embeddingClient.run({ input: texts });

@@ -1,12 +1,12 @@
-import { ChatResult } from "vscode";
-import { SIMPLE_MODELS, SIMPLE_EMBEDDINGS } from "../../constants";
-import { HanaDB } from "../databases/hana-db";
-import { OpenAiEmbeddings } from "../models/openai-embeddings";
-import { OpenAiModel } from "../models/openai-model";
-import { RAGApplicationBuilder } from "../services/rag-application-builder";
-import { MemoryStore } from "../store/memory-store";
+import { ChatResult } from 'vscode';
+import { SIMPLE_MODELS, SIMPLE_EMBEDDINGS } from '../../constants';
+import { HanaDB } from '../databases/hana-db';
+import { OpenAiEmbeddings } from '../models/openai-embeddings';
+import { OpenAiModel } from '../models/openai-model';
+import { RAGApplicationBuilder } from '../services/rag-application-builder';
+import { MemoryStore } from '../store/memory-store';
 
-export async function createRagApplication() {
+export async function createFridayServices() {
   const store = new MemoryStore();
   const db = new HanaDB();
 
@@ -22,16 +22,21 @@ export async function createRagApplication() {
     .setVectorDatabase(db)
     .setStore(store)
     .build();
-  
+
   return { store, db, llm, embeddingModel, ragApplication };
 }
 
-export function createMetadata(label: string, followup: string): ChatResult {
+export function createMetadata(
+  label: string = '',
+  command: string = '',
+  prompt: string = '',
+): ChatResult {
   return {
     metadata: {
       label,
-      prompt: '',
-      followup,
+      prompt,
+      command,
+      followup: command !== '',
     },
   };
 }

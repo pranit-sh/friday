@@ -51,10 +51,13 @@
     "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --no-coverage",
     "generate": "antlr4ng -Dlanguage=TypeScript -visitor -Xexact-output-dir grammars/LexBasic.g4 grammars/ANTLRv4Lexer.g4 grammars/ANTLRv4Parser.g4 -o src/parser",
     "lint": "eslint \"./src/**/*.ts\"",
+    "lint-fix": "eslint \"./src/**/*.ts\" --fix",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "build": "tsc -b && esbuild ./src/extension.ts --bundle --outfile=out/main.cjs --external:vscode --format=cjs --platform=node --loader:.svg=file",
     "build-watch": "npm run build -- --watch"
   },
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.98.0",
@@ -62,8 +65,10 @@
     "@typescript-eslint/parser": "^8.25.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
-    "eslint": "^9.21.0",
-    "typescript": "^5.7.3"
+    "eslint": "^9.26.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.1"
   },
   "dependencies": {
     "@langchain/community": "^0.3.36",
@@ -71,7 +76,8 @@
     "@langchain/textsplitters": "^0.1.0",
     "@sap-ai-sdk/foundation-models": "^1.10.0",
     "@sap/hana-client": "^2.24.21",
-    "any-text": "^1.2.0",
+    "any-extractor": "^2.0.1",
+    "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "esbuild": "^0.25.1"
   }

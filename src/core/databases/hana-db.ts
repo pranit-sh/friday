@@ -1,6 +1,6 @@
-import { InsertChunkData, ExtractChunkData, FridayConfig } from "../../types";
-import { BaseVectorDatabase } from "../interfaces/base-vector-database";
-import hanaClient from "@sap/hana-client";
+import { InsertChunkData, ExtractChunkData, FridayConfig } from '../../types';
+import { BaseVectorDatabase } from '../interfaces/base-vector-database';
+import hanaClient from '@sap/hana-client';
 
 export class HanaDB implements BaseVectorDatabase {
   private hanaClient: hanaClient.Connection | null = null;
@@ -21,7 +21,7 @@ export class HanaDB implements BaseVectorDatabase {
       this.hanaClient?.connect(connParams, (err: any) => {
         if (err) {
           this.hanaClient = null;
-          console.error("Error connecting to HANA DB:", err);
+          console.error('Error connecting to HANA DB:', err);
           return reject(err);
         }
         resolve();
@@ -77,7 +77,7 @@ export class HanaDB implements BaseVectorDatabase {
    */
   public async getIngestedFiles(projectId: string): Promise<string[]> {
     if (!this.hanaClient) {
-      throw new Error("Hana client is not initialized");
+      throw new Error('Hana client is not initialized');
     }
 
     const sql = `SELECT "file_id" FROM "${projectId}_meta"`;
@@ -93,7 +93,7 @@ export class HanaDB implements BaseVectorDatabase {
    */
   public async insertChunks(chunks: InsertChunkData[], projectId: string): Promise<number> {
     if (!this.hanaClient) {
-      throw new Error("Hana client is not initialized");
+      throw new Error('Hana client is not initialized');
     }
 
     const sql = `INSERT INTO "${projectId}" ("file_id", "page_content", "metadata", "vector") VALUES (?, ?, ?, ?)`;
@@ -126,7 +126,7 @@ export class HanaDB implements BaseVectorDatabase {
    */
   public async saveFileMeta(fileId: string, entries: number, projectId: string): Promise<void> {
     if (!this.hanaClient) {
-      throw new Error("Hana client is not initialized");
+      throw new Error('Hana client is not initialized');
     }
 
     const sql = `INSERT INTO "${projectId}_meta" ("file_id", "entries") VALUES (?, ?)`;
@@ -141,10 +141,10 @@ export class HanaDB implements BaseVectorDatabase {
    */
   public async deleteFile(fileId: string, projectId: string): Promise<void> {
     if (!this.hanaClient) {
-      throw new Error("Hana client is not initialized");
+      throw new Error('Hana client is not initialized');
     }
 
-    const deleteFileSql = `DELETE FROM "${projectId}" WHERE "metadata"->>'uniqueFileId' = ?`;
+    const deleteFileSql = `DELETE FROM "${projectId}" WHERE JSON_VALUE("metadata", '$.uniqueFileId') = ?`;
     const deleteMetaSql = `DELETE FROM "${projectId}_meta" WHERE "file_id" = ?`;
 
     await this.executeStatement(deleteFileSql, [fileId]);
@@ -162,10 +162,10 @@ export class HanaDB implements BaseVectorDatabase {
     projectId: string,
     query: number[],
     score: number,
-    k: number
+    k: number,
   ): Promise<ExtractChunkData[]> {
     if (!this.hanaClient) {
-      throw new Error("Hana client is not initialized");
+      throw new Error('Hana client is not initialized');
     }
 
     const sql = `SELECT TOP ? *, COSINE_SIMILARITY("vector", TO_REAL_VECTOR(?)) AS "similarity_score"
@@ -173,7 +173,12 @@ export class HanaDB implements BaseVectorDatabase {
          WHERE COSINE_SIMILARITY("vector", TO_REAL_VECTOR(?)) > ?
          ORDER BY "similarity_score" DESC`;
 
-    const result = await this.executeQuery(sql, [k, JSON.stringify(query), JSON.stringify(query), score]);
+    const result = await this.executeQuery(sql, [
+      k,
+      JSON.stringify(query),
+      JSON.stringify(query),
+      score,
+    ]);
 
     return result.map((row) => ({
       score: row.similarity_score,
@@ -190,10 +195,14 @@ export class HanaDB implements BaseVectorDatabase {
   private async executeStatement(sql: string, params: any[]): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.hanaClient?.prepare(sql, (err: any, statement: any) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
 
         statement.exec(params, (err: any) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           resolve();
         });
       });
@@ -208,10 +217,14 @@ export class HanaDB implements BaseVectorDatabase {
   private async executeQuery(sql: string, params: any[] = []): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
       this.hanaClient?.prepare(sql, (err: any, statement: any) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
 
         statement.exec(params, (err: any, result: any) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           resolve(result);
         });
       });
@@ -224,7 +237,9 @@ export class HanaDB implements BaseVectorDatabase {
   private async commitTransaction(): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       this.hanaClient?.commit((err: any) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
         resolve();
       });
     });

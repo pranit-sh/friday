@@ -7,12 +7,30 @@
 - **AI-Powered Assistance**: Ask questions about your project, and @friday will provide answers based on the ingested documents.
 - **Document Ingestion**: Easily upload and manage documents for @friday to reference.
 
+#### Supporting document formats:
+
+- .docx  
+- .pptx  
+- .xlsx  
+- .pdf  
+- .png  
+- .jpg, .jpeg  
+- .webp  
+- .odt  
+- .odp  
+- .ods  
+- .csv  
+- .txt  
+- .json  
+- Plain text (e.g., .py, .ts, .md, etc.)  
+- Confluence Pages
+
 \!\[@friday in action\]\(images/friday-demo.gif\)
 
 ## Extension Settings
 
 - `/howto`: Get instructions on how to use Friday.
-- `/ping`: Check connection to ensure Friday is active.
+- `/ping`: Create connection to ensure Friday is active.
 - `/ingest`: Ingest project documents in knowledgebase.
 
 ## Requirements
@@ -20,11 +38,12 @@
 - Node.js (version 20 or higher)
 - Running Hana instance
 
+>This version of @friday is supported for SAP HANA, but it can be extended to work with any type of database.
+
 ## Known Issues
 
-- Large document ingestion may take additional time.
-- Limited support for non-text-based documents (e.g., images, PDFs without text layers).
-- No support for url ingestion
+- Ingestion is synchronous and hence large document may take additional time.
+- No support for website ingestion
 
 ## Release Notes
 

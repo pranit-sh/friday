@@ -1,24 +1,26 @@
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
+import { getAnyExtractor } from 'any-extractor';
 import { BaseLoader } from '../interfaces/base-loader';
 import { cleanString } from '../util/strings';
-import path from 'path';
 
-var reader = require('any-text');
+export class FileUrlLoader extends BaseLoader<{ type: 'FileUrlLoader' }> {
+  private readonly fileUrl: string;
+  private readonly authHeader?: string;
 
-export class AnytextLoader extends BaseLoader<{ type: 'AnytextLoader' }> {
-  private readonly filePath: string;
   constructor({
-    filePath,
+    fileUrl,
+    authHeader,
     chunkOverlap,
     chunkSize,
   }: {
-    filePath: string;
+    fileUrl: string;
+    authHeader?: string;
     chunkSize?: number;
     chunkOverlap?: number;
   }) {
-    super(`${path.basename(filePath)}`, { filePath }, chunkSize ?? 1500, chunkOverlap ?? 200);
-
-    this.filePath = filePath;
+    super(fileUrl, {}, chunkSize ?? 1500, chunkOverlap ?? 200);
+    this.fileUrl = fileUrl;
+    this.authHeader = authHeader;
   }
 
   override async *getUnfilteredChunks() {
@@ -27,15 +29,16 @@ export class AnytextLoader extends BaseLoader<{ type: 'AnytextLoader' }> {
       chunkOverlap: this.chunkOverlap,
     });
 
-    const fileParsed = await reader.getText(this.filePath);
+    const anyExtractor = getAnyExtractor();
+    const fileParsed = await anyExtractor.parseFile(this.fileUrl, this.authHeader);
 
     const chunks = await chunker.splitText(cleanString(fileParsed));
     for (const chunk of chunks) {
       yield {
         pageContent: chunk,
         metadata: {
-          type: 'AnytextLoader' as const,
-          source: path.basename(this.filePath),
+          type: 'FileUrlLoader' as const,
+          source: this.fileUrl,
         },
       };
     }

@@ -1,4 +1,4 @@
-import { Chunk, FridayConfig } from "../../types";
+import { Chunk, FridayConfig } from '../../types';
 
 export class MemoryStore {
   private fridayConfig: FridayConfig | null = null;
