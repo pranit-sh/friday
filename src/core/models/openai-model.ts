@@ -27,6 +27,13 @@ export class OpenAiModel extends BaseModel {
   async runQuery(messages: ChatClientMessage[]) {
     const response = await this.chatClient.run({
       messages: messages,
+    });
+    return response.getContent();
+  }
+
+  async runQueryJson(messages: ChatClientMessage[]) {
+    const response = await this.chatClient.run({
+      messages: messages,
       response_format: {
         type: 'json_object',
       },

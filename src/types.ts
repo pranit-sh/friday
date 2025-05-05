@@ -111,7 +111,7 @@ export type FridayConfig = {
 
 export type ChatClientMessage = {
   role: 'user' | 'assistant' | 'system';
-  content: string;
+  content: any;
 };
 
 /** JIRA Types */

@@ -134,13 +134,15 @@ export abstract class BaseModel {
         content: userMessage,
       },
     ] as ChatClientMessage[];
-    const response = await this.runQuery(messages);
+    const response = await this.runQueryJson(messages);
     const jsonResponse = JSON.parse(response);
     store.setIntent(jsonResponse.intent);
     return jsonResponse.needRetrieval;
   }
 
   abstract runQuery(messages: ChatClientMessage[]): Promise<any>;
+
+  abstract runQueryJson(messages: ChatClientMessage[]): Promise<any>;
 
   abstract runQueryStream(messages: ChatClientMessage[]): Promise<any>;
 }

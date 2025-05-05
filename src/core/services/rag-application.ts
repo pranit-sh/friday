@@ -41,21 +41,26 @@ export class RAGApplication {
     return this.vectorDatabase.getIngestedFiles(projectId);
   }
 
-  public async ingestFile(uri: Uri): Promise<void> {
+  public async ingestFile(uri: Uri, img?: boolean, llm?: BaseModel): Promise<void> {
     const extension = uri.fsPath.split('.').pop();
     if (!extension) {
       return;
     }
 
-    const loader = new FileLoader({ filePath: uri.fsPath });
+    const loader = new FileLoader({ filePath: uri.fsPath, img, llm });
     const uniqueFileId = loader.getUniqueId();
     const chunks = await loader.getChunks();
     const entries = await this.batchLoadChunks(uniqueFileId, chunks);
     await this.saveFileMeta(uniqueFileId, entries);
   }
 
-  public async ingestFileUrl(fileUrl: string, basicAuth?: string): Promise<void> {
-    const loader = new FileUrlLoader({ fileUrl });
+  public async ingestFileUrl(
+    fileUrl: string,
+    basicAuth?: string,
+    img?: boolean,
+    llm?: BaseModel,
+  ): Promise<void> {
+    const loader = new FileUrlLoader({ fileUrl, basicAuth, img, llm });
     const uniqueFileId = loader.getUniqueId();
     const chunks = await loader.getChunks();
     const entries = await this.batchLoadChunks(uniqueFileId, chunks);
@@ -65,8 +70,11 @@ export class RAGApplication {
   public async ingestConfluencePage(
     pageId: string,
     p0: { baseUrl: string; user: string; apiKey: string },
+    img?: boolean,
+    llm?: BaseModel,
+    attachments?: boolean,
   ): Promise<void> {
-    const loader = new ConfluencePageLoader({ pageId, ...p0 });
+    const loader = new ConfluencePageLoader({ pageId, ...p0, img, llm, attachments });
     const uniqueFileId = loader.getUniqueId();
     const chunks = await loader.getChunks();
     const entries = await this.batchLoadChunks(uniqueFileId, chunks);

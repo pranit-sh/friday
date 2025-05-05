@@ -79,6 +79,7 @@
     "any-extractor": "^2.0.1",
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.25.1"
+    "esbuild": "^0.25.1",
+    "file-type-mime": "^0.4.6"
   }
 }

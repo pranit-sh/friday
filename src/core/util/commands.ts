@@ -11,6 +11,7 @@ import { MemoryStore } from '../store/memory-store';
 import { verifyConfigFile, verifyDataSource } from './files';
 import { RAGApplication } from '../services/rag-application';
 import { FridayConfig } from '../../types';
+import { BaseModel } from '../interfaces/base-model';
 
 export async function handleHowtoCommand(stream: vscode.ChatResponseStream, prompt: string) {
   switch (prompt) {
@@ -63,6 +64,7 @@ export async function handleIngestCommand(
   ragApp: RAGApplication,
   db: HanaDB,
   store: MemoryStore,
+  llm: BaseModel,
 ): Promise<vscode.ChatResult> {
   const config = await verifyConfigFile(stream, [
     'hana_endpoint',
@@ -95,21 +97,38 @@ export async function handleIngestCommand(
     }
   }
 
-  switch (request.prompt.trim()) {
-    case '':
-      return await ingestFiles(stream, fileUris, ragApp, false, false, store);
-    case '--sync':
-      return await ingestFiles(stream, fileUris, ragApp, true, false, store);
-    case '--hard':
-      return await ingestFiles(stream, fileUris, ragApp, true, true, store);
-    case '--list':
-      return await listFiles(stream, ragApp);
-    default:
-      stream.markdown(
-        'Invalid flag. Available flags are `--sync`, `--hard`, and `--list`. See `/howto` command for details.',
-      );
-      return createMetadata('how to use friday', 'howto', '--commands');
+  const flags = request.prompt.trim().split(' ');
+
+  const isSync = flags.includes('--sync');
+  const isHard = flags.includes('--hard');
+  const isList = flags.includes('--list');
+
+  if ((isSync && isHard) || (isList && (isSync || isHard))) {
+    stream.markdown('You cannot use --sync and --hard (or --list with each others) together.');
+    return createMetadata();
   }
+
+  const extractImages = flags.includes('--extract-images');
+  const withAttachment = flags.includes('--extract-attachment');
+  const useLLM = flags.includes('--use-llm');
+
+  if (isList) {
+    return await listFiles(stream, ragApp);
+  }
+
+  if (isSync || isHard) {
+    return await ingestFiles(stream, fileUris, ragApp, true, isHard, store, llm, {
+      extractImages,
+      withAttachment,
+      useLLM,
+    });
+  }
+
+  return await ingestFiles(stream, fileUris, ragApp, false, false, store, llm, {
+    extractImages,
+    withAttachment,
+    useLLM,
+  });
 }
 
 async function ingestFiles(
@@ -119,6 +138,12 @@ async function ingestFiles(
   sync: boolean,
   hard: boolean,
   store: MemoryStore,
+  llm: BaseModel,
+  options: {
+    extractImages?: boolean;
+    withAttachment?: boolean;
+    useLLM?: boolean;
+  } = {},
 ): Promise<vscode.ChatResult> {
   const ingestedFiles = await ragApp.getIngestedFiles();
 
@@ -195,7 +220,7 @@ async function ingestFiles(
       }
     }
     stream.progress(`Ingesting ${fileName}`);
-    await ragApp.ingestFile(uri);
+    await ragApp.ingestFile(uri, options.extractImages, options.useLLM ? llm : undefined);
     stream.markdown(`Ingested ${fileName}`);
   }
 
@@ -210,7 +235,12 @@ async function ingestFiles(
       }
     }
     stream.progress(`Ingesting ${url}`);
-    await ragApp.ingestFileUrl(url);
+    await ragApp.ingestFileUrl(
+      url,
+      undefined,
+      options.extractImages,
+      options.useLLM ? llm : undefined,
+    );
     stream.markdown(`Ingested ${url}`);
   }
 
@@ -237,11 +267,17 @@ async function ingestFiles(
       break;
     }
     stream.progress(`Ingesting ${url}`);
-    await ragApp.ingestConfluencePage(url, {
-      baseUrl: store.getConfig()?.confluence_baseurl || '',
-      user: store.getConfig()?.confluence_user || '',
-      apiKey: store.getConfig()?.confluence_apikey || '',
-    });
+    await ragApp.ingestConfluencePage(
+      url,
+      {
+        baseUrl: store.getConfig()?.confluence_baseurl || '',
+        user: store.getConfig()?.confluence_user || '',
+        apiKey: store.getConfig()?.confluence_apikey || '',
+      },
+      options.extractImages,
+      options.useLLM ? llm : undefined,
+      options.withAttachment,
+    );
     stream.markdown(`Ingested ${url}`);
   }
 

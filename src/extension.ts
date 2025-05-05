@@ -13,7 +13,7 @@ import {
 
 export async function activate(context: vscode.ExtensionContext) {
   dotenv.config({ path: path.join(__dirname, '..', '.env') });
-  const { store, db, ragApplication } = await createFridayServices();
+  const { store, db, llm, ragApplication } = await createFridayServices();
 
   const handler: vscode.ChatRequestHandler = async (request, context, stream) => {
     switch (request.command) {
@@ -22,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
       case 'ping':
         return handlePingCommand(stream, db, store);
       case 'ingest':
-        return handleIngestCommand(request, stream, ragApplication, db, store);
+        return handleIngestCommand(request, stream, ragApplication, db, store, llm);
       default:
         return handleQuery(request, context, stream, ragApplication);
     }
