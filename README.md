@@ -9,21 +9,21 @@
 
 #### Supporting document formats:
 
-- .docx  
-- .pptx  
-- .xlsx  
-- .pdf  
-- .png  
-- .jpg, .jpeg  
-- .webp  
-- .odt  
-- .odp  
-- .ods  
-- .csv  
-- .txt  
-- .json  
-- Plain text (e.g., .py, .ts, .md, etc.)  
-- Confluence Pages
+`.docx `,
+`.pptx `,
+`.xlsx `,
+`.pdf `,
+`.png `,
+`.jpg, .jpeg `,
+`.webp `,
+`.odt `,
+`.odp `,
+`.ods `,
+`.csv `,
+`.txt `,
+`.json `,
+`Plain text (e.g., .py, .ts, .md, etc.) `,
+`Confluence Page`,
 
 \!\[@friday in action\]\(images/friday-demo.gif\)
 
