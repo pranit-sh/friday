@@ -2,6 +2,9 @@
 
 **@friday** is an AI-powered project assistant for Visual Studio Code, built on top of GitHub Copilot. It leverages Retrieval-Augmented Generation (RAG) to answer your queries based on the documents you provide. With @friday, you can streamline your workflow and get instant, context-aware assistance directly within your editor. As an additional participant in your development process, @friday enhances productivity and collaboration.
 
+## In Action
+![@friday in action](content/friday-demo.gif)
+
 ## Features
 
 - **AI-Powered Assistance**: Ask questions about your project, and @friday will provide answers based on the ingested documents.
@@ -24,8 +27,6 @@
 `.json `,
 `Plain text (e.g., .py, .ts, .md, etc.) `,
 `Confluence Page`,
-
-\!\[@friday in action\]\(images/friday-demo.gif\)
 
 ## Extension Settings
 
