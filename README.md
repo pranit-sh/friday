@@ -40,18 +40,6 @@ https://github.com/user-attachments/assets/ac977c48-d660-4330-8768-135a71e9019c
 
 >This version of @friday is supported for SAP HANA, but code can be extended to work with any type of database.
 
-## Known Issues
-
-- Ingestion is synchronous and hence large document may take additional time.
-- No support for website ingestion
-
-## Release Notes
-
-### 1.0.0
-
-- Initial release of @friday.
-- Core features: document ingestion, query answering, and context-aware responses.
-
 ## Run Locally
 
 1. **Clone the Repository**:
