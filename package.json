@@ -4,7 +4,8 @@
   "description": "AI Project Assistant",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.96.4"
+    "vscode": "^1.96.4",
+    "node": "^18.0.0"
   },
   "categories": [
     "AI",

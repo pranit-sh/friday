@@ -1,14 +1,14 @@
 # @friday README
 
-**@friday** is an AI-powered project assistant for Visual Studio Code, built as a chat participant on top of GitHub Copilot. It leverages Retrieval-Augmented Generation (RAG) to answer your queries based on the documents you provide. With @friday, you can streamline your workflow and get instant, context-aware assistance directly within your editor. As an additional participant in your development process, @friday enhances productivity and collaboration.
+**@friday** is an AI-powered project assistant for Visual Studio Code, built as a chat participant on top of GitHub Copilot. It leverages Retrieval-Augmented Generation (RAG) to answer your queries based on the documents you provide. With @friday, you can streamline your workflow and get instant, context-aware assistance directly within your editor.
 
 ## In Action
 https://github.com/user-attachments/assets/ac977c48-d660-4330-8768-135a71e9019c
 
 ## Features
 
-- **AI-Powered Assistance**: Ask questions about your project, and @friday will provide answers based on the ingested documents.
-- **Document Ingestion**: Easily upload and manage documents for @friday to reference.
+- **Document Ingestion**: Supports ingestion of local documents, URL documents and confluence pages for @friday to refer.
+- **AI-Powered Assistance**: Ask questions about your project, and @friday will provide answers using ingested documents.
 
 #### Supporting document formats:
 
@@ -26,7 +26,7 @@ https://github.com/user-attachments/assets/ac977c48-d660-4330-8768-135a71e9019c
 `.txt `,
 `.json `,
 `Plain text (e.g., .py, .ts, .md, etc.) `,
-`Confluence Page`,
+`Confluence Page`
 
 ## Extension Settings
 
@@ -36,10 +36,9 @@ https://github.com/user-attachments/assets/ac977c48-d660-4330-8768-135a71e9019c
 
 ## Requirements
 
-- Node.js (version 20 or higher)
 - Running Hana instance
 
->This version of @friday is supported for SAP HANA, but it can be extended to work with any type of database.
+>This version of @friday is supported for SAP HANA, but code can be extended to work with any type of database.
 
 ## Known Issues
 
